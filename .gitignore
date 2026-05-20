@@ -1,0 +1,25 @@
+# Eclipse
+.metadata/
+.project
+.classpath
+.settings/
+
+# Java
+target/
+*.class
+
+# Logs
+*.log
+
+# Node
+node_modules/
+
+# Angular
+dist/
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db

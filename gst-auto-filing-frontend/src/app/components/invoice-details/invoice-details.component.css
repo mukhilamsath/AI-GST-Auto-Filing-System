@@ -1,0 +1,52 @@
+.invoices-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-title {
+  color: #1e3c72;
+  margin-bottom: 24px;
+}
+
+.table-card {
+  padding: 16px;
+}
+
+.search-field {
+  width: 100%;
+  max-width: 300px;
+  margin-bottom: 16px;
+}
+
+table {
+  width: 100%;
+}
+
+.status-chip {
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.status-valid {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.status-warning {
+  background-color: #fff3e0;
+  color: #ef6c00;
+}
+
+.status-error {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.empty-cell {
+  text-align: center;
+  padding: 32px;
+  color: #757575;
+}
