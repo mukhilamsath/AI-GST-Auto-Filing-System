@@ -1,38 +1,120 @@
-<div class="errors-container">
-  <h1 class="page-title">Validation Errors</h1>
+<div class="validation-grid-container">
+  <div class="grid-header">
+    <h2>Inline Error Resolution</h2>
+    <p>Review, edit, and re-validate invoices failing compliance checks.</p>
+  </div>
 
-  <mat-card class="table-card">
-    <mat-card-content>
-      <div class="table-responsive">
-        <table mat-table [dataSource]="dataSource" class="mat-elevation-z0">
+  <div class="table-responsive">
+    <table class="data-grid">
+      <thead>
+        <tr>
+          <th class="col-status">Status</th>
+          <th>Invoice No.</th>
+          <th>Vendor Name</th>
+          <th>GSTIN</th>
+          <th>Date</th>
+          <th>Taxable Amt</th>
+          <th>Total Amt</th>
+          <th class="col-actions">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngIf="isLoading">
+          <td colspan="8" class="loading-cell">Loading invoices...</td>
+        </tr>
+        <tr *ngIf="!isLoading && invoices.length === 0">
+          <td colspan="8" class="empty-cell">No validation errors found. All good!</td>
+        </tr>
+        <tr *ngFor="let invoice of invoices" 
+            [class.row-editing]="invoice.isEditing"
+            (keydown)="handleKeyDown($event, invoice)">
           
-          <ng-container matColumnDef="invoiceNumber">
-            <th mat-header-cell *matHeaderCellDef> Invoice # </th>
-            <td mat-cell *matCellDef="let error"> {{error.invoiceNumber}} </td>
-          </ng-container>
+          <!-- Status Column with Tooltip -->
+          <td class="cell-status cell-error" [attr.title]="getInvoiceErrors(invoice)">
+            <div class="error-indicator">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="error-icon">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+            </div>
+          </td>
 
-          <ng-container matColumnDef="errorMessage">
-            <th mat-header-cell *matHeaderCellDef> Error Message </th>
-            <td mat-cell *matCellDef="let error"> {{error.errorMessage}} </td>
-          </ng-container>
+          <!-- Invoice Number -->
+          <td (click)="startEdit(invoice)">
+            <ng-container *ngIf="!invoice.isEditing">
+              {{ invoice.invoiceNumber }}
+            </ng-container>
+            <ng-container *ngIf="invoice.isEditing">
+              <input type="text" [(ngModel)]="invoice.invoiceNumber" class="compact-input" autofocus />
+            </ng-container>
+          </td>
 
-          <ng-container matColumnDef="severity">
-            <th mat-header-cell *matHeaderCellDef> Severity </th>
-            <td mat-cell *matCellDef="let error">
-              <span class="severity-chip" [ngClass]="getSeverityClass(error.severity)">
-                {{error.severity}}
-              </span>
-            </td>
-          </ng-container>
+          <!-- Vendor Name -->
+          <td (click)="startEdit(invoice)">
+            <ng-container *ngIf="!invoice.isEditing">
+              {{ invoice.vendorName }}
+            </ng-container>
+            <ng-container *ngIf="invoice.isEditing">
+              <input type="text" [(ngModel)]="invoice.vendorName" class="compact-input" />
+            </ng-container>
+          </td>
 
-          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-          
-          <tr class="mat-row" *matNoDataRow>
-            <td class="mat-cell empty-cell" colspan="3">No validation errors found.</td>
-          </tr>
-        </table>
-      </div>
-    </mat-card-content>
-  </mat-card>
+          <!-- GSTIN -->
+          <td (click)="startEdit(invoice)">
+            <ng-container *ngIf="!invoice.isEditing">
+              {{ invoice.gstin }}
+            </ng-container>
+            <ng-container *ngIf="invoice.isEditing">
+              <input type="text" [(ngModel)]="invoice.gstin" class="compact-input" />
+            </ng-container>
+          </td>
+
+          <!-- Date -->
+          <td (click)="startEdit(invoice)">
+            <ng-container *ngIf="!invoice.isEditing">
+              {{ invoice.invoiceDate }}
+            </ng-container>
+            <ng-container *ngIf="invoice.isEditing">
+              <input type="date" [(ngModel)]="invoice.invoiceDate" class="compact-input" />
+            </ng-container>
+          </td>
+
+          <!-- Taxable Amount -->
+          <td (click)="startEdit(invoice)">
+            <ng-container *ngIf="!invoice.isEditing">
+              {{ invoice.taxableAmount | currency:'INR' }}
+            </ng-container>
+            <ng-container *ngIf="invoice.isEditing">
+              <input type="number" [(ngModel)]="invoice.taxableAmount" class="compact-input" />
+            </ng-container>
+          </td>
+
+          <!-- Total Amount -->
+          <td (click)="startEdit(invoice)">
+            <ng-container *ngIf="!invoice.isEditing">
+              {{ invoice.totalAmount | currency:'INR' }}
+            </ng-container>
+            <ng-container *ngIf="invoice.isEditing">
+              <input type="number" [(ngModel)]="invoice.totalAmount" class="compact-input" />
+            </ng-container>
+          </td>
+
+          <!-- Actions -->
+          <td class="cell-actions">
+            <ng-container *ngIf="!invoice.isEditing">
+              <button class="btn btn-edit" (click)="startEdit(invoice)">Edit</button>
+            </ng-container>
+            <ng-container *ngIf="invoice.isEditing">
+              <button class="btn btn-save" (click)="saveEdit(invoice)" [disabled]="invoice.isSaving">
+                {{ invoice.isSaving ? 'Saving...' : 'Save' }}
+              </button>
+              <button class="btn btn-cancel" (click)="cancelEdit(invoice)" [disabled]="invoice.isSaving">Cancel</button>
+            </ng-container>
+          </td>
+
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>

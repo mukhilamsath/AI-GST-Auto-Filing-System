@@ -17,8 +17,8 @@ public class InvoiceController {
     private InvoiceService invoiceService;
 
     @PostMapping("/upload")
-    public ResponseEntity<InvoiceDto> uploadInvoice(@RequestParam("file") MultipartFile file) {
-        return ResponseEntity.ok(invoiceService.processUploadedInvoice(file));
+    public ResponseEntity<List<InvoiceDto>> uploadInvoices(@RequestParam("files") List<MultipartFile> files) {
+        return ResponseEntity.ok(invoiceService.processUploadedInvoices(files));
     }
 
     @GetMapping

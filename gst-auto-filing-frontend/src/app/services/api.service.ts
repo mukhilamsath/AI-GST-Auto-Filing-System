@@ -37,10 +37,12 @@ export interface DashboardSummary {
 export class ApiService {
   constructor(private http: HttpClient) {}
 
-  uploadInvoice(file: File): Observable<Invoice> {
+  uploadInvoices(files: File[]): Observable<Invoice[]> {
     const formData = new FormData();
-    formData.append('file', file);
-    return this.http.post<Invoice>(`${environment.apiUrl}/invoices/upload`, formData);
+    files.forEach(file => {
+      formData.append('files', file);
+    });
+    return this.http.post<Invoice[]>(`${environment.apiUrl}/invoices/upload`, formData);
   }
 
   getInvoices(): Observable<Invoice[]> {
@@ -49,5 +51,9 @@ export class ApiService {
 
   getDashboardSummary(): Observable<DashboardSummary> {
     return this.http.get<DashboardSummary>(`${environment.apiUrl}/dashboard/summary`);
+  }
+
+  updateAndRevalidateInvoice(id: number, payload: Partial<Invoice>): Observable<{ isValid: boolean; invoice: Invoice }> {
+    return this.http.put<{ isValid: boolean; invoice: Invoice }>(`${environment.apiUrl}/invoices/${id}/revalidate`, payload);
   }
 }

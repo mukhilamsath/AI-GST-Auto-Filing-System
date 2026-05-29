@@ -30,7 +30,9 @@ public class DashboardService {
                 .filter(inv -> "VALID".equals(inv.getValidationStatus()))
                 .count();
                 
-        long errorCount = validationErrorRepository.count();
+        long errorCount = invoices.stream()
+                .filter(inv -> !"VALID".equals(inv.getValidationStatus()))
+                .count();
 
         DashboardSummaryDto summary = new DashboardSummaryDto();
         summary.setTotalInvoices(totalInvoices);

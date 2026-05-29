@@ -46,6 +46,12 @@ public class InvoiceService {
         return mapToDto(invoice, errors);
     }
 
+    public List<InvoiceDto> processUploadedInvoices(List<MultipartFile> files) {
+        return files.stream()
+                .map(this::processUploadedInvoice)
+                .collect(Collectors.toList());
+    }
+
     public List<InvoiceDto> getAllInvoices() {
         return invoiceRepository.findAll().stream().map(inv -> {
             List<ValidationError> errors = errorRepository.findByInvoiceId(inv.getId());

@@ -17,7 +17,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 })
 export class UploadInvoiceComponent {
   isDragOver = false;
-  selectedFile: File | null = null;
+  selectedFiles: File[] = [];
   isUploading = false;
 
   constructor(
@@ -41,37 +41,37 @@ export class UploadInvoiceComponent {
     this.isDragOver = false;
     
     if (event.dataTransfer?.files && event.dataTransfer.files.length > 0) {
-      this.selectedFile = event.dataTransfer.files[0];
+      this.selectedFiles = [...this.selectedFiles, ...(Array.from(event.dataTransfer.files) as File[])];
     }
   }
 
   onFileSelected(event: any) {
     if (event.target.files && event.target.files.length > 0) {
-      this.selectedFile = event.target.files[0];
+      this.selectedFiles = [...this.selectedFiles, ...(Array.from(event.target.files) as File[])];
     }
   }
 
-  clearFile(event: Event) {
+  clearFile(event: Event, index: number) {
     event.stopPropagation();
-    this.selectedFile = null;
+    this.selectedFiles.splice(index, 1);
   }
 
-  uploadFile() {
-    if (!this.selectedFile) return;
+  uploadFiles() {
+    if (this.selectedFiles.length === 0) return;
     
     this.isUploading = true;
     
     // Simulate some OCR processing delay
     setTimeout(() => {
-      this.apiService.uploadInvoice(this.selectedFile!).subscribe({
-        next: (invoice) => {
+      this.apiService.uploadInvoices(this.selectedFiles).subscribe({
+        next: (invoices) => {
           this.isUploading = false;
-          this.snackBar.open('Invoice processed successfully!', 'Close', { duration: 3000 });
+          this.snackBar.open(`${invoices.length} invoices processed successfully!`, 'Close', { duration: 3000 });
           this.router.navigate(['/invoices']);
         },
         error: (err) => {
           this.isUploading = false;
-          this.snackBar.open('Error processing invoice', 'Close', { duration: 3000 });
+          this.snackBar.open('Error processing invoices', 'Close', { duration: 3000 });
         }
       });
     }, 1500);

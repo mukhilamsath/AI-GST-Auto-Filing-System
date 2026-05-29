@@ -66,4 +66,11 @@
 
 .chart-card {
   padding: 16px;
+  min-height: 420px;
+}
+
+.chart-card canvas {
+  display: block;
+  width: 100% !important;
+  height: 320px !important;
 }

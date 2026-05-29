@@ -46,7 +46,7 @@
   <div class="charts-section">
     <mat-card class="chart-card">
       <mat-card-header>
-        <mat-card-title>Recent Invoices (Mock Data)</mat-card-title>
+        <mat-card-title>Recent Invoices</mat-card-title>
       </mat-card-header>
       <mat-card-content>
         <canvas baseChart
@@ -54,6 +54,14 @@
           [options]="barChartOptions"
           [type]="'bar'">
         </canvas>
+        <div class="recent-invoice-list" *ngIf="recentInvoices.length > 0">
+          <h4>Latest invoices</h4>
+          <ul>
+            <li *ngFor="let invoice of recentInvoices">
+              {{ invoice.invoiceNumber }} - ₹{{ invoice.totalAmount | number:'1.2-2' }} on {{ invoice.invoiceDate | date:'mediumDate' }}
+            </li>
+          </ul>
+        </div>
       </mat-card-content>
     </mat-card>
   </div>

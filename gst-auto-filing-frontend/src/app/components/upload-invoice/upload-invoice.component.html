@@ -18,22 +18,25 @@
         <input 
           #fileInput 
           type="file" 
+          multiple
           hidden 
           (change)="onFileSelected($event)" 
           accept=".pdf,.jpg,.jpeg,.png">
       </div>
 
-      <div *ngIf="selectedFile" class="file-info">
-        <mat-icon>insert_drive_file</mat-icon>
-        <span>{{ selectedFile.name }}</span>
-        <button mat-icon-button color="warn" (click)="clearFile($event)" [disabled]="isUploading">
-          <mat-icon>close</mat-icon>
-        </button>
+      <div class="file-list" *ngIf="selectedFiles.length > 0">
+        <div *ngFor="let file of selectedFiles; let i = index" class="file-info">
+          <mat-icon>insert_drive_file</mat-icon>
+          <span>{{ file.name }}</span>
+          <button mat-icon-button color="warn" (click)="clearFile($event, i)" [disabled]="isUploading">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
       </div>
 
-      <div class="upload-actions" *ngIf="selectedFile">
-        <button mat-raised-button color="primary" (click)="uploadFile()" [disabled]="isUploading">
-          <span *ngIf="!isUploading">Upload & Process</span>
+      <div class="upload-actions" *ngIf="selectedFiles.length > 0">
+        <button mat-raised-button color="primary" (click)="uploadFiles()" [disabled]="isUploading">
+          <span *ngIf="!isUploading">Upload & Process {{ selectedFiles.length > 1 ? selectedFiles.length + ' Invoices' : '' }}</span>
           <span *ngIf="isUploading">Processing OCR...</span>
         </button>
       </div>
