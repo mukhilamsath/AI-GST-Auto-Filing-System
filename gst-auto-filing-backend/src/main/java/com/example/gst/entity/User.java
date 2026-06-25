@@ -44,6 +44,16 @@ public class User {
 		this.password = password;
 	}
 
+	private String role = "USER";
+
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
+	}
+
 	private String name;
 
     @Column(unique = true, nullable = false)

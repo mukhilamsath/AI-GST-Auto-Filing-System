@@ -37,11 +37,12 @@ export class RegisterComponent implements OnInit {
 
   ngOnInit() {
     if (this.authService.currentUserValue) {
-      this.router.navigate(['/login']);
+      this.router.navigate(['/dashboard']);
     }
     this.registerForm = this.formBuilder.group({
-      email: ['admin@gst.com', Validators.required],
-      password: ['password123', Validators.required]
+      name: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]]
     });
   }
 
@@ -52,15 +53,14 @@ export class RegisterComponent implements OnInit {
     this.loading = true;
     this.error = '';
     
-    this.authService.login(this.registerForm.value)
+    this.authService.register(this.registerForm.value)
       .subscribe({
         next: () => {
-          this.router.navigate(['/login']);
+          this.router.navigate(['/login'], { queryParams: { registered: true } });
         },
         error: error => {
-          this.error = 'Invalid credentials';
-          console.log(error);
-         this.error = error.error?.message || 'Login failed';
+          console.error(error);
+          this.error = error.error?.message || 'Registration failed. Please try again.';
           this.loading = false;
         }
       });

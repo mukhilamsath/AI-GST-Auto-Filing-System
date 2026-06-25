@@ -113,6 +113,30 @@ public class Invoice {
 		this.createdAt = createdAt;
 	}
 
+	public Long getReviewerId() {
+		return reviewerId;
+	}
+
+	public void setReviewerId(Long reviewerId) {
+		this.reviewerId = reviewerId;
+	}
+
+	public Double getConfidenceScore() {
+		return confidenceScore;
+	}
+
+	public void setConfidenceScore(Double confidenceScore) {
+		this.confidenceScore = confidenceScore;
+	}
+
+	public String getReviewStatus() {
+		return reviewStatus;
+	}
+
+	public void setReviewStatus(String reviewStatus) {
+		this.reviewStatus = reviewStatus;
+	}
+
 	private String gstin;
     private LocalDate invoiceDate;
     
@@ -123,6 +147,10 @@ public class Invoice {
     private Double totalAmount;
     
     private String validationStatus; // VALID, WARNING, ERROR
+    
+    private Long reviewerId;
+    private Double confidenceScore;
+    private String reviewStatus; // PENDING_REVIEW, IN_REVIEW, REVIEWED
     
     private LocalDateTime createdAt;
     

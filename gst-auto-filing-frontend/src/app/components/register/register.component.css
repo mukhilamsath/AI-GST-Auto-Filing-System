@@ -41,3 +41,20 @@ mat-card-title {
   font-size: 24px;
   font-weight: 600;
 }
+
+.redirect-link {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 14px;
+  color: #666;
+}
+
+.redirect-link a {
+  color: #1e3c72;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.redirect-link a:hover {
+  text-decoration: underline;
+}

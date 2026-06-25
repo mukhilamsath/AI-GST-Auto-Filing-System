@@ -5,8 +5,16 @@ import { AuthService } from '../services/auth.service';
 export const authGuard: CanActivateFn = (route, state) => {
   const authService = inject(AuthService);
   const router = inject(Router);
+  const currentUser = authService.currentUserValue;
 
-  if (authService.currentUserValue) {
+  if (currentUser) {
+    const expectedRoles = route.data?.['roles'] as Array<string>;
+    if (expectedRoles && expectedRoles.length > 0) {
+      if (!expectedRoles.includes(currentUser.role)) {
+        router.navigate(['/dashboard']);
+        return false;
+      }
+    }
     return true;
   }
 

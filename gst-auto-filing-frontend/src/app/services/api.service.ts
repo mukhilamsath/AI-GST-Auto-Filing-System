@@ -56,4 +56,20 @@ export class ApiService {
   updateAndRevalidateInvoice(id: number, payload: Partial<Invoice>): Observable<{ isValid: boolean; invoice: Invoice }> {
     return this.http.put<{ isValid: boolean; invoice: Invoice }>(`${environment.apiUrl}/invoices/${id}/revalidate`, payload);
   }
+
+  getUsers(): Observable<any[]> {
+    return this.http.get<any[]>(`${environment.apiUrl}/users`);
+  }
+
+  createUser(user: any): Observable<any> {
+    return this.http.post<any>(`${environment.apiUrl}/users`, user);
+  }
+
+  updateUserRole(id: number, role: string): Observable<any> {
+    return this.http.put<any>(`${environment.apiUrl}/users/${id}/role`, { role });
+  }
+
+  deleteUser(id: number): Observable<any> {
+    return this.http.delete<any>(`${environment.apiUrl}/users/${id}`);
+  }
 }

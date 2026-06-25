@@ -209,8 +209,18 @@ public class OcrService {
         invoice.setIgst(igst);
         invoice.setTotalAmount(total);
 
-        log.info("Successfully Parsed Invoice: number={}, vendor={}, gstin={}, total={}",
-                invoice.getInvoiceNumber(), invoice.getVendorName(), invoice.getGstin(), total);
+        // Mock confidence score
+        double mockConfidence = Math.random() * 100;
+        invoice.setConfidenceScore(Math.round(mockConfidence * 100.0) / 100.0);
+        
+        if (invoice.getConfidenceScore() < 80.0) {
+            invoice.setReviewStatus("PENDING_REVIEW");
+        } else {
+            invoice.setReviewStatus("REVIEWED"); // No manual review needed
+        }
+
+        log.info("Successfully Parsed Invoice: number={}, vendor={}, gstin={}, total={}, confidence={}",
+                invoice.getInvoiceNumber(), invoice.getVendorName(), invoice.getGstin(), total, invoice.getConfidenceScore());
 
         return invoice;
     }

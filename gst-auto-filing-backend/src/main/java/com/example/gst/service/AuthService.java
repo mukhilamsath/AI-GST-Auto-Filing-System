@@ -40,7 +40,24 @@ public class AuthService {
             admin.setName("Admin User");
             admin.setEmail("admin@gst.com");
             admin.setPassword(passwordEncoder.encode("password123"));
+            admin.setRole("ADMIN");
             userRepository.save(admin);
+        }
+        if (userRepository.findByEmail("reviewer@gst.com").isEmpty()) {
+            User reviewer = new User();
+            reviewer.setName("Reviewer User");
+            reviewer.setEmail("reviewer@gst.com");
+            reviewer.setPassword(passwordEncoder.encode("password123"));
+            reviewer.setRole("REVIEWER");
+            userRepository.save(reviewer);
+        }
+        if (userRepository.findByEmail("user@gst.com").isEmpty()) {
+            User user = new User();
+            user.setName("Taxpayer User");
+            user.setEmail("user@gst.com");
+            user.setPassword(passwordEncoder.encode("password123"));
+            user.setRole("USER");
+            userRepository.save(user);
         }
     }
 
@@ -54,6 +71,17 @@ public class AuthService {
         
         User user = userRepository.findByEmail(loginRequest.getEmail()).orElseThrow();
 
-        return new AuthResponse(jwt, user.getName(), user.getEmail());
+        return new AuthResponse(jwt, user.getName(), user.getEmail(), user.getRole());
+    }
+
+    public User register(User user) {
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+            throw new RuntimeException("Email is already taken");
+        }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        if (user.getRole() == null || user.getRole().isEmpty()) {
+            user.setRole("USER");
+        }
+        return userRepository.save(user);
     }
 }

@@ -1,0 +1,73 @@
+<div class="review-queue-container glass-panel p-6">
+  <h2 class="text-2xl font-bold mb-6 text-white">Manual Review Queue</h2>
+  
+  <div *ngIf="loading" class="text-white">Loading...</div>
+
+  <div *ngIf="!loading">
+    <!-- Assigned to me -->
+    <div class="mb-8">
+      <h3 class="text-xl font-semibold mb-4 text-primary">My Assigned Tasks</h3>
+      <div *ngIf="assignedInvoices.length === 0" class="text-gray-400">
+        No tasks assigned to you.
+      </div>
+      <table *ngIf="assignedInvoices.length > 0" class="w-full text-left border-collapse">
+        <thead>
+          <tr class="border-b border-gray-600 text-gray-300">
+            <th class="py-2">Invoice #</th>
+            <th class="py-2">Vendor</th>
+            <th class="py-2">Confidence</th>
+            <th class="py-2">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let inv of assignedInvoices" class="border-b border-gray-700 text-white">
+            <td class="py-3">{{ inv.invoiceNumber }}</td>
+            <td class="py-3">{{ inv.vendorName }}</td>
+            <td class="py-3">
+              <span class="px-2 py-1 rounded-full text-xs"
+                    [ngClass]="{'bg-red-500/20 text-red-400': inv.confidenceScore < 50, 'bg-yellow-500/20 text-yellow-400': inv.confidenceScore >= 50 && inv.confidenceScore < 80}">
+                {{ inv.confidenceScore }}%
+              </span>
+            </td>
+            <td class="py-3">
+              <button (click)="openReviewTask(inv.id)" class="btn-primary py-1 px-3 text-sm">Review Now</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pending Queue -->
+    <div>
+      <h3 class="text-xl font-semibold mb-4 text-secondary">Pending Pool</h3>
+      <div *ngIf="pendingInvoices.length === 0" class="text-gray-400">
+        No pending invoices for review.
+      </div>
+      <table *ngIf="pendingInvoices.length > 0" class="w-full text-left border-collapse">
+        <thead>
+          <tr class="border-b border-gray-600 text-gray-300">
+            <th class="py-2">Invoice #</th>
+            <th class="py-2">Vendor</th>
+            <th class="py-2">Confidence</th>
+            <th class="py-2">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let inv of pendingInvoices" class="border-b border-gray-700 text-white hover:bg-white/5 transition-colors">
+            <td class="py-3">{{ inv.invoiceNumber }}</td>
+            <td class="py-3">{{ inv.vendorName }}</td>
+            <td class="py-3">
+              <span class="px-2 py-1 rounded-full text-xs"
+                    [ngClass]="{'bg-red-500/20 text-red-400': inv.confidenceScore < 50, 'bg-yellow-500/20 text-yellow-400': inv.confidenceScore >= 50 && inv.confidenceScore < 80}">
+                {{ inv.confidenceScore }}%
+              </span>
+            </td>
+            <td class="py-3">
+              <button (click)="assignToMe(inv.id)" class="btn-secondary py-1 px-3 text-sm">Assign to me</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

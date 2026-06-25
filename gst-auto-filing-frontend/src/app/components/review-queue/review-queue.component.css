@@ -1,0 +1,12 @@
+.review-queue-container {
+  min-height: 500px;
+}
+
+table th {
+  padding-bottom: 0.75rem;
+}
+
+table td {
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}

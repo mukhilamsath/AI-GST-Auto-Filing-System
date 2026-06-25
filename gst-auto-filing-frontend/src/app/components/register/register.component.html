@@ -1,8 +1,8 @@
-a<div class="login-container">
+<div class="login-container">
   <mat-card class="login-card">
     <mat-card-header>
       <mat-card-title class="card-title">AI GST Auto-Filing</mat-card-title>
-      <mat-card-subtitle>Login to your dashboard</mat-card-subtitle>
+      <mat-card-subtitle>Create your account</mat-card-subtitle>
     </mat-card-header>
     
     <mat-card-content>
@@ -10,24 +10,29 @@ a<div class="login-container">
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Name</mat-label>
-          <input matInput type="text" formControlName="text" required>
+          <input matInput type="text" formControlName="name" required placeholder="Enter your full name">
         </mat-form-field>
+
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Email</mat-label>
-          <input matInput type="email" formControlName="email" required>
+          <input matInput type="email" formControlName="email" required placeholder="Enter your email">
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Password</mat-label>
-          <input matInput type="password" formControlName="password" required>
+          <input matInput type="password" formControlName="password" required placeholder="Min 6 characters">
         </mat-form-field>
         
         <div *ngIf="error" class="text-danger error-text">{{ error }}</div>
 
-        <button mat-raised-button color="primary" type="submit" [disabled]="loading || loginForm.invalid" class="login-button">
-          <span *ngIf="!loading">Login</span>
+        <button mat-raised-button color="primary" type="submit" [disabled]="loading || registerForm.invalid" class="login-button">
+          <span *ngIf="!loading">Sign Up</span>
           <mat-spinner diameter="20" *ngIf="loading"></mat-spinner>
         </button>
+
+        <div class="redirect-link">
+          Already have an account? <a routerLink="/login">Login here</a>
+        </div>
       </form>
     </mat-card-content>
   </mat-card>

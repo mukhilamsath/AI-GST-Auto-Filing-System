@@ -7,6 +7,7 @@ export interface AuthResponse {
   token: string;
   name: string;
   email: string;
+  role: string;
 }
 
 @Injectable({
@@ -37,8 +38,16 @@ export class AuthService {
       }));
   }
 
+  register(user: any): Observable<any> {
+    return this.http.post<any>(`${environment.apiUrl}/auth/register`, user);
+  }
+
   logout() {
     localStorage.removeItem('currentUser');
     this.currentUserSubject.next(null);
+  }
+
+  hasRole(role: string): boolean {
+    return this.currentUserValue?.role === role;
   }
 }

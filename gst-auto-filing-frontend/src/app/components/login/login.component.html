@@ -1,4 +1,4 @@
-a<div class="login-container">
+<div class="login-container">
   <mat-card class="login-card">
     <mat-card-header>
       <mat-card-title class="card-title">AI GST Auto-Filing</mat-card-title>
@@ -23,6 +23,10 @@ a<div class="login-container">
           <span *ngIf="!loading">Login</span>
           <mat-spinner diameter="20" *ngIf="loading"></mat-spinner>
         </button>
+
+        <div class="redirect-link">
+          Don't have an account? <a routerLink="/register">Register here</a>
+        </div>
       </form>
     </mat-card-content>
   </mat-card>

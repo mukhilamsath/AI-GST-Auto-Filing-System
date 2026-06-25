@@ -21,7 +21,11 @@ public class ValidationEngine {
         boolean hasWarning = false;
 
         // 1. Check duplicate invoice number
-        if (invoiceRepository.existsByInvoiceNumber(invoice.getInvoiceNumber())) {
+        boolean isDuplicate = invoice.getId() != null 
+                ? invoiceRepository.existsByInvoiceNumberAndIdNot(invoice.getInvoiceNumber(), invoice.getId())
+                : invoiceRepository.existsByInvoiceNumber(invoice.getInvoiceNumber());
+        
+        if (isDuplicate) {
             errors.add(new ValidationError(null, "Duplicate Invoice Number: " + invoice.getInvoiceNumber(), "ERROR"));
             hasError = true;
         }

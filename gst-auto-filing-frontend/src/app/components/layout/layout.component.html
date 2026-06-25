@@ -20,6 +20,14 @@
         <mat-icon matListItemIcon>error_outline</mat-icon>
         <span matListItemTitle>Validation Errors</span>
       </a>
+      <a *ngIf="isReviewer" mat-list-item routerLink="/review-queue" routerLinkActive="active-link">
+        <mat-icon matListItemIcon>rule</mat-icon>
+        <span matListItemTitle>Review Queue</span>
+      </a>
+      <a *ngIf="isAdmin" mat-list-item routerLink="/users" routerLinkActive="active-link">
+        <mat-icon matListItemIcon>people</mat-icon>
+        <span matListItemTitle>User Management</span>
+      </a>
     </mat-nav-list>
   </mat-sidenav>
   <mat-sidenav-content>

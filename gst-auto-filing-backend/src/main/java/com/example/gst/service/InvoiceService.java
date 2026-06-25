@@ -59,6 +59,44 @@ public class InvoiceService {
         }).collect(Collectors.toList());
     }
 
+    @org.springframework.transaction.annotation.Transactional
+    public java.util.Map<String, Object> updateAndRevalidate(Long id, InvoiceDto payload) {
+        Invoice invoice = invoiceRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Invoice not found"));
+
+        invoice.setInvoiceNumber(payload.getInvoiceNumber());
+        invoice.setVendorName(payload.getVendorName());
+        invoice.setGstin(payload.getGstin());
+        invoice.setInvoiceDate(payload.getInvoiceDate());
+        invoice.setTaxableAmount(payload.getTaxableAmount());
+        invoice.setCgst(payload.getCgst());
+        invoice.setSgst(payload.getSgst());
+        invoice.setIgst(payload.getIgst());
+        invoice.setTotalAmount(payload.getTotalAmount());
+
+        // Clear old errors
+        List<ValidationError> oldErrors = errorRepository.findByInvoiceId(id);
+        errorRepository.deleteAll(oldErrors);
+
+        // Run validation
+        List<ValidationError> errors = validationEngine.validateInvoice(invoice);
+
+        // Save invoice and errors
+        invoice = invoiceRepository.save(invoice);
+        for (ValidationError error : errors) {
+            error.setInvoiceId(invoice.getId());
+        }
+        errorRepository.saveAll(errors);
+
+        InvoiceDto updatedDto = mapToDto(invoice, errors);
+        boolean isValid = errors.isEmpty();
+
+        return java.util.Map.of(
+            "isValid", isValid,
+            "invoice", updatedDto
+        );
+    }
+
     private InvoiceDto mapToDto(Invoice invoice, List<ValidationError> errors) {
         InvoiceDto dto = new InvoiceDto();
         dto.setId(invoice.getId());

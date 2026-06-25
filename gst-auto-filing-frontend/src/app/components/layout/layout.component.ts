@@ -28,6 +28,8 @@ import { MatMenuModule } from '@angular/material/menu';
 })
 export class LayoutComponent implements OnInit {
   userName = '';
+  isReviewer = false;
+  isAdmin = false;
 
   constructor(
     private authService: AuthService,
@@ -38,6 +40,8 @@ export class LayoutComponent implements OnInit {
     this.authService.currentUser.subscribe(user => {
       if (user) {
         this.userName = user.name;
+        this.isReviewer = user.role === 'REVIEWER' || user.role === 'ADMIN';
+        this.isAdmin = user.role === 'ADMIN';
       }
     });
   }
