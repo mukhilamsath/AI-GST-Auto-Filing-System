@@ -9,6 +9,7 @@ import { ValidationErrorsComponent } from './components/validation-errors/valida
 import { ReviewQueueComponent } from './components/review-queue/review-queue.component';
 import { ReviewTaskComponent } from './components/review-task/review-task.component';
 import { UsersComponent } from './components/users/users.component';
+import { DashboardAnalyticsComponent } from './components/dashboard-analytics/dashboard-analytics.component';
 import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
@@ -20,6 +21,7 @@ export const routes: Routes = [
     canActivate: [authGuard],
     children: [
       { path: 'dashboard', component: DashboardComponent },
+      { path: 'analytics', component: DashboardAnalyticsComponent },
       { 
         path: 'upload', 
         component: UploadInvoiceComponent,

@@ -45,6 +45,30 @@ table {
   color: #c62828;
 }
 
+.status-processing {
+  background-color: #e3f2fd;
+  color: #1565c0;
+  border: 1px dashed #1565c0;
+  animation: pulse-shimmer 1.5s infinite ease-in-out;
+}
+
+.status-processed {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  font-weight: 500;
+}
+
+.status-failed {
+  background-color: #fbe9e7;
+  color: #d84315;
+}
+
+@keyframes pulse-shimmer {
+  0% { opacity: 0.75; }
+  50% { opacity: 1; }
+  100% { opacity: 0.75; }
+}
+
 .empty-cell {
   text-align: center;
   padding: 32px;

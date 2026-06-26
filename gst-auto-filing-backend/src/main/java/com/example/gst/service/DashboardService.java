@@ -23,15 +23,36 @@ public class DashboardService {
         
         long totalInvoices = invoices.size();
         double totalGstCollected = invoices.stream()
-                .mapToDouble(inv -> inv.getCgst() + inv.getSgst() + inv.getIgst())
+                .mapToDouble(inv -> {
+                    double cgst = inv.getCgst() != null ? inv.getCgst() : 0.0;
+                    double sgst = inv.getSgst() != null ? inv.getSgst() : 0.0;
+                    double igst = inv.getIgst() != null ? inv.getIgst() : 0.0;
+                    return cgst + sgst + igst;
+                })
                 .sum();
                 
         long validInvoices = invoices.stream()
-                .filter(inv -> "VALID".equals(inv.getValidationStatus()))
+                .filter(inv -> {
+                    if ("VALID".equals(inv.getValidationStatus())) {
+                        return true;
+                    }
+                    if ("PROCESSED".equals(inv.getValidationStatus())) {
+                        return validationErrorRepository.findByInvoiceId(inv.getId()).isEmpty();
+                    }
+                    return false;
+                })
                 .count();
                 
         long errorCount = invoices.stream()
-                .filter(inv -> !"VALID".equals(inv.getValidationStatus()))
+                .filter(inv -> {
+                    if ("FAILED".equals(inv.getValidationStatus())) {
+                        return true;
+                    }
+                    if ("PROCESSED".equals(inv.getValidationStatus())) {
+                        return !validationErrorRepository.findByInvoiceId(inv.getId()).isEmpty();
+                    }
+                    return !"VALID".equals(inv.getValidationStatus()) && !"PROCESSING".equals(inv.getValidationStatus());
+                })
                 .count();
 
         DashboardSummaryDto summary = new DashboardSummaryDto();

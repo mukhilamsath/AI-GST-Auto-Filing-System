@@ -15,6 +15,10 @@ public class ValidationEngine {
     @Autowired
     private InvoiceRepository invoiceRepository;
 
+    public List<ValidationError> validate(Invoice invoice) {
+        return validateInvoice(invoice);
+    }
+
     public List<ValidationError> validateInvoice(Invoice invoice) {
         List<ValidationError> errors = new ArrayList<>();
         boolean hasError = false;

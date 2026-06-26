@@ -85,8 +85,16 @@ public class OcrService {
 
     // ── Main Entry Point ──────────────────────────────────────────────────────
 
+    public String extractText(MultipartFile file) {
+        String text = runOcr(file);
+        if (text == null || text.trim().isEmpty()) {
+            throw new RuntimeException("OCR extraction failed: raw text is empty");
+        }
+        return text;
+    }
+
     public Invoice extractInvoiceData(MultipartFile file) {
-        String rawText = runOcr(file);
+        String rawText = extractText(file);
         log.info("=== OCR Raw Text ===\n{}", rawText);
         return parseInvoice(rawText, file.getOriginalFilename());
     }
@@ -147,7 +155,7 @@ public class OcrService {
 
     // ── Structural Text Parsing ───────────────────────────────────────────────
 
-    private Invoice parseInvoice(String text, String filename) {
+    public Invoice parseInvoice(String text, String filename) {
         Invoice invoice = new Invoice();
 
         // Invoice Number Extraction

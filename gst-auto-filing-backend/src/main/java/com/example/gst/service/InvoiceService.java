@@ -8,6 +8,8 @@ import com.example.gst.repository.ValidationErrorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,6 +28,80 @@ public class InvoiceService {
 
     @Autowired
     private ValidationEngine validationEngine;
+
+    @Transactional
+    public List<Invoice> createPendingInvoices(List<MultipartFile> files) {
+        return files.stream().map(file -> {
+            Invoice invoice = new Invoice();
+            invoice.setValidationStatus("PROCESSING");
+            invoice.setInvoiceNumber("PENDING-" + java.util.UUID.randomUUID().toString().substring(0, 8).toUpperCase());
+            invoice.setVendorName("Processing...");
+            invoice.setReviewStatus("PENDING_REVIEW");
+            return invoiceRepository.save(invoice);
+        }).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void saveProcessedResults(Long invoiceId, Invoice tempInvoice) {
+        Invoice invoice = invoiceRepository.findById(invoiceId)
+                .orElseThrow(() -> new RuntimeException("Invoice not found: " + invoiceId));
+
+        invoice.setInvoiceNumber(tempInvoice.getInvoiceNumber());
+        invoice.setVendorName(tempInvoice.getVendorName());
+        invoice.setGstin(tempInvoice.getGstin());
+        invoice.setInvoiceDate(tempInvoice.getInvoiceDate());
+        invoice.setTaxableAmount(tempInvoice.getTaxableAmount());
+        invoice.setCgst(tempInvoice.getCgst());
+        invoice.setSgst(tempInvoice.getSgst());
+        invoice.setIgst(tempInvoice.getIgst());
+        invoice.setTotalAmount(tempInvoice.getTotalAmount());
+        invoice.setConfidenceScore(tempInvoice.getConfidenceScore());
+        invoice.setReviewStatus(tempInvoice.getReviewStatus());
+
+        // Run validation
+        List<ValidationError> errors = validationEngine.validate(invoice);
+        for (ValidationError error : errors) {
+            error.setInvoiceId(invoiceId);
+        }
+        errorRepository.saveAll(errors);
+
+        invoice.setValidationStatus("PROCESSED");
+        invoiceRepository.save(invoice);
+    }
+
+    @Transactional
+    public void saveFailedResults(Long invoiceId, String errorMessage) {
+        Invoice invoice = invoiceRepository.findById(invoiceId).orElse(null);
+        if (invoice != null) {
+            ValidationError error = new ValidationError(invoiceId, errorMessage, "ERROR");
+            errorRepository.save(error);
+
+            invoice.setValidationStatus("FAILED");
+            invoiceRepository.save(invoice);
+        }
+    }
+
+    @Async("invoiceTaskExecutor")
+    public void processInvoiceAsync(Long invoiceId, byte[] fileBytes, String originalFilename) {
+        try {
+            MultipartFile file = new com.example.gst.util.InMemoryMultipartFile(
+                    "files", originalFilename, "application/octet-stream", fileBytes
+            );
+
+            // 1. Run OCR (extractText)
+            String rawText = ocrService.extractText(file);
+
+            // 2. Parse OCR text to get details
+            Invoice tempInvoice = ocrService.parseInvoice(rawText, originalFilename);
+
+            // 3. Save details, run validation, set status to PROCESSED
+            saveProcessedResults(invoiceId, tempInvoice);
+
+        } catch (Exception e) {
+            // Save ValidationError and set status to FAILED
+            saveFailedResults(invoiceId, "Async processing failed: " + e.getMessage());
+        }
+    }
 
     public InvoiceDto processUploadedInvoice(MultipartFile file) {
         // 1. Extract Data via real Tesseract OCR
@@ -97,7 +173,7 @@ public class InvoiceService {
         );
     }
 
-    private InvoiceDto mapToDto(Invoice invoice, List<ValidationError> errors) {
+    public InvoiceDto mapToDto(Invoice invoice, List<ValidationError> errors) {
         InvoiceDto dto = new InvoiceDto();
         dto.setId(invoice.getId());
         dto.setInvoiceNumber(invoice.getInvoiceNumber());

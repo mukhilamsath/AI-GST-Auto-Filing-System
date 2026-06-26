@@ -33,9 +33,9 @@ export class ValidationErrorsComponent implements OnInit {
       finalize(() => this.isLoading = false)
     ).subscribe({
       next: (invoices) => {
-        // Filter out only invoices with errors or non-VALID status
+        // Filter out only invoices that are not PROCESSING and either FAILED or have validation errors
         this.invoices = invoices
-          .filter(inv => inv.validationStatus !== 'VALID' || (inv.errors && inv.errors.length > 0))
+          .filter(inv => inv.validationStatus !== 'PROCESSING' && (inv.validationStatus === 'FAILED' || (inv.errors && inv.errors.length > 0)))
           .map(inv => ({ ...inv, isEditing: false, isSaving: false }));
       },
       error: (err) => {

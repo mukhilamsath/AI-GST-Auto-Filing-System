@@ -31,6 +31,23 @@ export interface DashboardSummary {
   validInvoicesCount: number;
 }
 
+export interface MonthlyTaxLiability {
+  month: string;
+  cgst: number;
+  sgst: number;
+  igst: number;
+}
+
+export interface ValidationErrorDistribution {
+  errorType: string;
+  count: number;
+}
+
+export interface AnalyticsSummary {
+  taxLiabilities: MonthlyTaxLiability[];
+  errorDistribution: ValidationErrorDistribution[];
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -51,6 +68,10 @@ export class ApiService {
 
   getDashboardSummary(): Observable<DashboardSummary> {
     return this.http.get<DashboardSummary>(`${environment.apiUrl}/dashboard/summary`);
+  }
+
+  getAnalyticsSummary(): Observable<AnalyticsSummary> {
+    return this.http.get<AnalyticsSummary>(`${environment.apiUrl}/analytics/summary`);
   }
 
   updateAndRevalidateInvoice(id: number, payload: Partial<Invoice>): Observable<{ isValid: boolean; invoice: Invoice }> {

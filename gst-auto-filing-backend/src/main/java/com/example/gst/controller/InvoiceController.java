@@ -20,7 +20,24 @@ public class InvoiceController {
     @PostMapping("/upload")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<List<InvoiceDto>> uploadInvoices(@RequestParam("files") List<MultipartFile> files) {
-        return ResponseEntity.ok(invoiceService.processUploadedInvoices(files));
+        List<com.example.gst.entity.Invoice> pendingInvoices = invoiceService.createPendingInvoices(files);
+        
+        for (int i = 0; i < files.size(); i++) {
+            MultipartFile file = files.get(i);
+            com.example.gst.entity.Invoice invoice = pendingInvoices.get(i);
+            try {
+                byte[] bytes = file.getBytes();
+                invoiceService.processInvoiceAsync(invoice.getId(), bytes, file.getOriginalFilename());
+            } catch (java.io.IOException e) {
+                invoiceService.saveFailedResults(invoice.getId(), "Failed to read upload file bytes: " + e.getMessage());
+            }
+        }
+        
+        List<InvoiceDto> dtos = pendingInvoices.stream()
+                .map(inv -> invoiceService.mapToDto(inv, java.util.List.of()))
+                .collect(java.util.stream.Collectors.toList());
+                
+        return ResponseEntity.accepted().body(dtos);
     }
 
     @GetMapping
